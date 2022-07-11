@@ -1,5 +1,5 @@
 import java.util.*;
-import java.io.*
+import java.io.*;
 
 public class TextMining{
 
@@ -23,7 +23,7 @@ public class TextMining{
             File folder = new File(folderName);
             for (File file : folder.listFiles()) {
                  buffer = new BufferedReader(new FileReader(file));
-                 String output = preProcessor.process(buffer);
+                 List<String>  tokens = preProcessor.process(buffer);
 
             }
         }
