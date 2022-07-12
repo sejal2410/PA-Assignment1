@@ -7,33 +7,37 @@ import java.util.*;
 
 class PreProcessing{
     ArrayList<String> stopwords;
-   // StanfordCoreNLP pipeline;
+    StanfordCoreNLP pipeline;
     PreProcessing(ArrayList<String> stopwords){
        this.stopwords = stopwords;
-//        Properties props = new Properties();
-//        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
-//        // set a property for an annotator, in this case the coref annotator is being set to use the neural algorithm
-//        props.setProperty("coref.algorithm", "neural");
-//        // build pipeline
-//       pipeline = new StanfordCoreNLP(props);
+        Properties props = new Properties();
+        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
+        // set a property for an annotator, in this case the coref annotator is being set to use the neural algorithm
+        props.setProperty("coref.algorithm", "neural");
+        // build pipeline
+       pipeline = new StanfordCoreNLP(props);
     }
 
     String removeStopwords(BufferedReader buffer) throws IOException {
         String s = "";
         StringBuilder sb = new StringBuilder();
         while((s=buffer.readLine())!=null){
-            for(String stopword:stopwords)
-                s.replace(stopword,"");
-            sb.append(s);
+            s = s.toLowerCase();
+            String[] words = s.split(" ");
+            for(String word: words){
+                if(word!=" " && !stopwords.contains(word))
+                    sb.append(word+" ");
+            }
         }
         return sb.toString();
     }
 
     public List<String>  process(BufferedReader buffer) throws IOException {
-        String output = removeStopwords(buffer);
+        String output = removeStopwords(buffer).trim();
         Document document = new Document(output);
-     //   pipeline.annotate((Iterable<Annotation>) document);
-        
+        CoreDocument document1 = new CoreDocument(output);
+        pipeline.annotate(document1);
+
         List<String> tokens = new ArrayList<String>();
         List<Sentence> sentences = document.sentences();
 
@@ -65,7 +69,7 @@ class PreProcessing{
                 }
             }
         }
-        return tokens;
+       return tokens;
     }
 
     // Use a sliding window approach to merge remaining phrases that belong together.
@@ -90,13 +94,13 @@ class PreProcessing{
 
         for (Map.Entry<String, List<String>> entry: map.entrySet()) {
 
-            String sentence = String.join(" ", entry.getValue());
+            String sentences = String.join(" ", entry.getValue());
 
             for (String ngram: ngramList) {
-                sentence= sentence.replace(ngram, ngram.replace(" ", "_"));
+                sentences= sentences.replace(ngram, ngram.replace(" ", "_"));
             }
 
-            List<String> tokensList = Arrays.asList(sentence.split(" "));
+            List<String> tokensList = Arrays.asList(sentences.split(" "));
             entry.setValue(tokensList);
         }
     }
@@ -116,6 +120,7 @@ class PreProcessing{
                 ngrams.add(ngramWords);
             }
         }
+        System.out.println(ngrams);
         return ngrams;
     }
 }

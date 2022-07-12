@@ -3,6 +3,7 @@ import java.io.*;
 
 public class TextMining {
 
+
     public static void main(String[] args) throws Exception {
         String foldersfile = "data.txt";
         String folderPath = "";
@@ -28,7 +29,8 @@ public class TextMining {
             }
         }
         preProcessor.slidingWindow(documentTokens);
-        System.out.println(documentTokens);
-
+        Matrix ma = new Matrix(documentTokens);
+        double[][] TFIDF  = ma.constructTFIDFMatrix(documentTokens);
+        HashMap<String,  SortedSet<String>> keywords = ma.generateKeywords();
     }
 }
