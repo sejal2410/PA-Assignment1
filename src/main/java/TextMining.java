@@ -32,5 +32,6 @@ public class TextMining {
         Matrix ma = new Matrix(documentTokens);
         double[][] TFIDF  = ma.constructTFIDFMatrix(documentTokens);
         HashMap<String,  SortedSet<String>> keywords = ma.generateKeywords();
+        System.out.println(keywords);
     }
 }

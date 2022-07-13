@@ -12,15 +12,17 @@ public class Matrix {
     Matrix( HashMap<String, List<String>> map){
         this.map = map;
         HashSet<String> allTokens = new HashSet<>();
-
+        documents = new ArrayList<>();
+        allTokenKList = new ArrayList<>();
+        documents = new ArrayList<>();
         for (List<String> tokens : map.values())
             allTokens.addAll(tokens);
-        List<String> documents = new ArrayList<>();
-        TF = new double[documents.size()][allTokens.size()];
-        IDF = new double[allTokens.size()];
+
         for (String documentName : map.keySet())
             documents.add(documentName);
-
+        TF = new double[documents.size()][allTokens.size()];
+        IDF = new double[allTokens.size()];
+        allTokenKList.addAll(allTokens);
         Collections.sort(documents);
         Collections.sort(allTokenKList);
     }
@@ -38,7 +40,8 @@ public class Matrix {
                 if (TF[j][i] != 0)
                     nonZeroDocumentsCount++;
             }
-            IDF[i] = (Math.log(documents.size() / nonZeroDocumentsCount));
+            if(nonZeroDocumentsCount!=0)
+                IDF[i] = (Math.log(documents.size() / nonZeroDocumentsCount));
         }
         for (int i = 0; i < documents.size(); i++) {
             for (int j = 0; j < allTokenKList.size(); j++) {
