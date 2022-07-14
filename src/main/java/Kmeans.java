@@ -5,12 +5,14 @@ public class Kmeans {
     SimilarityMeasure measure;
     double[][] matrix;
     int[] clusterNamesIndex;
-    List<Integer> centres = new ArrayList<>();
+    double[][]  centres;
+    //List<Integer> centres = new ArrayList<>();
     int k;
     private static final Random random = new Random();
     public Kmeans(int k, double[][] matrix){
         this.matrix = matrix;
         clusterNamesIndex = new int[matrix.length];
+        centres = new double[k][matrix[0].length];
         Arrays.fill(clusterNamesIndex,-1);
         this.k=k;
     }
@@ -19,53 +21,87 @@ public class Kmeans {
 
         if(mea.toLowerCase().equals("cosine"))
             measure = new CosineSimilarityMeasure();
-        if(mea.toLowerCase().equals("cosine"))
+        if(mea.toLowerCase().equals("euclidean"))
             measure = new euclideanSimilarityMeasure();
         intializeCentroids(centres);
         int iterations = 0;
-        int[] lastClustersAllocated = Arrays.copyOf(clusterNamesIndex,clusterNamesIndex.length);
+        double[][] lastClustersAllocated = new double[k][matrix[0].length];
+        for (int i=0; i<centres.length; i++) {
+            for (int j=0; j<centres[0].length; j++) {
+                lastClustersAllocated[i][j]=centres[i][j];
+            }
+        }
         while(iterations!=maxIterations){
             iterations++;
             for(int i=0;i< matrix.length;i++){
-                if(!centres.contains(i)) {
+                //if(!centres.contains(i)) {
                     int nearestIndex = nearestNeighBour(i);
                     clusterNamesIndex[i] = nearestIndex;
-                }
+
             }
-            if(Arrays.equals(lastClustersAllocated,clusterNamesIndex))
+            updateCentres();
+            if(equalCentres(lastClustersAllocated,centres))
                 break;
-            updateCentres(centres);
+
         }
         return clusterNamesIndex;
     }
 
-    private void updateCentres(List<Integer> centres) {
-        HashMap<Integer, Integer> countCentroids = new HashMap<>();
-        for(int i=0;i< matrix.length;i++){
-            if(!centres.contains(i)){
-
+    boolean equalCentres(double[][] lastClustersAllocated, double[][] centres){
+        for (int i=0; i<centres.length; i++) {
+            for (int j=0; j<centres[0].length; j++) {
+                if(lastClustersAllocated[i][j]!=centres[i][j])
+                    return false;
+            }
+        }
+        return true;
+    }
+    private void updateCentres() {
+        for(double[] a:centres)
+            Arrays.fill(a,0);
+        int[] count = new int[matrix.length];
+        for (int i=0; i<matrix.length; i++) {
+            int cl = clusterNamesIndex[i];
+            for (int j=0; j<matrix[0].length; j++) {
+                centres[cl][j] += matrix[i][j];
+            }
+            count[cl]++;
+        }
+        for (int i=0; i<k; i++) {
+            for (int j=0; j<matrix[0].length; j++) {
+                centres[i][j] /= count[i];
             }
         }
     }
 
-    private int nearestNeighBour(int i) {
+    private int nearestNeighBour(int j) {
         double distance = Double.MAX_VALUE;
         int nearIndex = 0;
-        for(int c : centres){
-            double d= measure.distance(matrix[i], matrix[c]);
+        for(int i=0;i<k;i++){
+
+            double d= measure.distance(matrix[j], centres[i]);
             if(distance>d){
                 distance = d;
-                nearIndex = c;
+                nearIndex = i;
             }
         }
         return nearIndex;
     }
 
-    void intializeCentroids( List<Integer> centres){
-        while(centres.size()!=k){
+    void intializeCentroids(double[][] centres){
+        HashSet<Integer> set = new HashSet<>( Arrays.asList(1,2,3,4,7,8));
+        int i=0;
+        while(i!=k){
             int index = random.nextInt(matrix.length);
-            if(!centres.contains(index))
-                centres.add(index);
+            if(!set.contains(index)) {
+                set.add(index);
+                for(int j=0;j< matrix[0].length;j++)
+                    centres[i][j] = matrix[index][j];
+                i++;
+                clusterNamesIndex[index] = index;
+                System.out.print(index+"    ");
+            }
         }
+        System.out.println();
     }
 }
