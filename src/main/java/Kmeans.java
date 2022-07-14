@@ -6,7 +6,6 @@ public class Kmeans {
     double[][] matrix;
     int[] clusterNamesIndex;
     double[][]  centres;
-    //List<Integer> centres = new ArrayList<>();
     int k;
     private static final Random random = new Random();
     public Kmeans(int k, double[][] matrix){
@@ -21,7 +20,7 @@ public class Kmeans {
 
         if(mea.toLowerCase().equals("cosine"))
             measure = new CosineSimilarityMeasure();
-        if(mea.toLowerCase().equals("euclidean"))
+        else
             measure = new euclideanSimilarityMeasure();
         intializeCentroids(centres);
         int iterations = 0;
@@ -33,10 +32,15 @@ public class Kmeans {
         }
         while(iterations!=maxIterations){
             iterations++;
+            for (int i=0; i<centres.length; i++) {
+                for (int j=0; j<centres[0].length; j++) {
+                    lastClustersAllocated[i][j]=centres[i][j];
+                }
+            }
             for(int i=0;i< matrix.length;i++){
                 //if(!centres.contains(i)) {
-                    int nearestIndex = nearestNeighBour(i);
-                    clusterNamesIndex[i] = nearestIndex;
+                int nearestIndex = nearestNeighBour(i);
+                clusterNamesIndex[i] = nearestIndex;
 
             }
             updateCentres();

@@ -11,6 +11,6 @@ public class CosineSimilarityMeasure extends SimilarityMeasure {
             den1 += x[i]*x[i];
             den2 += y[i]*y[i];
         }
-        return numerator / (Math.sqrt(den1) * Math.sqrt(den2));
+        return Math.abs(numerator / (Math.sqrt(den1) * Math.sqrt(den2)));
     }
 }
