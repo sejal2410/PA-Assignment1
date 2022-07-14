@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class Matrix {
@@ -25,6 +27,10 @@ public class Matrix {
         allTokenKList.addAll(allTokens);
         Collections.sort(documents);
         Collections.sort(allTokenKList);
+    }
+
+    List<String> getDocIds(){
+        return documents;
     }
      double[][] constructTFIDFMatrix(HashMap<String, List<String>> map) {
 
@@ -83,7 +89,6 @@ public class Matrix {
                 }
             }
 
-
             Comparator<String> sortOnValue = (e1, e2) -> tokenScore.get(e1) < tokenScore.get(e2) ? -1 : tokenScore.get(e1) > tokenScore.get(e2)? 1
                     : e1.compareTo(e2);
             SortedSet<String> keys = new TreeSet<>(sortOnValue);
@@ -92,6 +97,32 @@ public class Matrix {
 
             keywords.put(entry.getKey(), keys);
         }
+
+            List<String> folderNames = new ArrayList<>();
+            TreeMap<String,SortedSet<String>> sortedTopics = new TreeMap<>();
+            sortedTopics.putAll(keywords);
+            try {
+                FileWriter fw = new FileWriter("topics.txt");
+                for (Map.Entry<String, SortedSet<String>> entry : sortedTopics.entrySet()) {
+                    String topicString = String.join(", ", entry.getValue());
+                    String h = entry.getKey();
+                    int index = nthLastIndexOf(2,"/",h);
+                    String[] arr = h.substring(index+1).split("/");
+                    if(!(folderNames.contains(arr[0]))) {
+                        fw.write("Folder Name: " + arr[0]+ "\n");
+                        folderNames.add(arr[0]);
+                    }
+                    fw.write("Topics: \n" + topicString + "\n\n");
+                }
+                fw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
     return keywords;
+    }
+    static int nthLastIndexOf(int nth, String ch, String string) {
+        if (nth <= 0) return string.length();
+        return nthLastIndexOf(--nth, ch, string.substring(0, string.lastIndexOf(ch)));
     }
 }

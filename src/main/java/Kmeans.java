@@ -6,16 +6,23 @@ public class Kmeans {
     double[][] matrix;
     int[] clusterNamesIndex;
     double[][]  centres;
+    int[] intialCentres ;
     int k;
     private static final Random random = new Random();
     public Kmeans(int k, double[][] matrix){
         this.matrix = matrix;
+        intialCentres = new int[k];
         clusterNamesIndex = new int[matrix.length];
         centres = new double[k][matrix[0].length];
         Arrays.fill(clusterNamesIndex,-1);
         this.k=k;
     }
-
+    int[] centroidsLabels(int[] documentFolderMapping){
+        int[] mapping = new int[k];
+        for(int i=0;i<k;i++)
+            mapping[i] = documentFolderMapping[intialCentres[i]];
+        return mapping;
+    }
     int[] getClusters(String mea, int maxIterations){
 
         if(mea.toLowerCase().equals("cosine"))
@@ -61,8 +68,9 @@ public class Kmeans {
         return true;
     }
     private void updateCentres() {
-        for(double[] a:centres)
-            Arrays.fill(a,0);
+        for(int i=0;i<centres.length;i++)
+            for(int j=0;j<centres[0].length;j++)
+                centres[i][j]=0;
         int[] count = new int[matrix.length];
         for (int i=0; i<matrix.length; i++) {
             int cl = clusterNamesIndex[i];
@@ -101,6 +109,7 @@ public class Kmeans {
                 set.add(index);
                 for(int j=0;j< matrix[0].length;j++)
                     centres[i][j] = matrix[index][j];
+                intialCentres[i] = index;
                 i++;
                 clusterNamesIndex[index] = index;
                 System.out.print(index+"    ");
@@ -108,4 +117,5 @@ public class Kmeans {
         }
         System.out.println();
     }
+
 }

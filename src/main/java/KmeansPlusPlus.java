@@ -58,6 +58,7 @@ public class KmeansPlusPlus extends Kmeans {
                 for (int i=0; i<matrix[0].length; i++) {
                     centroids[c][i] = matrix[newCentroid][i];
                 }
+                intialCentres[c] = newCentroid;
             }
             Collections.sort(index);
 
