@@ -4,7 +4,10 @@ import java.io.*;
 public class TextMining {
 
     public static void main(String[] args) throws Exception {
-        String foldersfile = "data.txt";
+
+        int noClusters= Integer.parseInt(args[1]);
+        String measure= args[2];
+        String foldersfile =args[0];
         String folderPath = "";
         File data_file = new File(foldersfile);
         BufferedReader br1 = new BufferedReader(new FileReader(data_file));
@@ -34,7 +37,6 @@ public class TextMining {
         }
 
 
-
         preProcessor.slidingWindow(documentTokens);
         Matrix ma = new Matrix(documentTokens);
         double[][] TFIDF  = ma.constructTFIDFMatrix(documentTokens);
@@ -42,22 +44,41 @@ public class TextMining {
         int[] original_labels = OriginalLabels(docIds, documentCount);
 
         HashMap<String,  SortedSet<String>> keywords = ma.generateKeywords();
-        Kmeans k = new Kmeans(3, TFIDF);
-        int[] kmeansClusters = k.getClusters("euclidean", 50);
+        Kmeans k = new Kmeans(noClusters, TFIDF);
+
+        int[] kmeansClusters = k.getClusters(measure, 50);
         int[] mapping = k.centroidsLabels(original_labels);
-        System.out.println(documentCount);
-        System.out.println("KMeans Labels: " + Arrays.toString(kmeansClusters));
+
         for(int i=0;i<kmeansClusters.length;i++)
             kmeansClusters[i] = mapping[kmeansClusters[i]];
-//        for(int i: kmeansClusters)
-//            System.out.print(i+"    ");
-        KmeansPlusPlus kmeansplusplus = new KmeansPlusPlus(3,TFIDF);
-        int[] kmeansplusplusLabels = kmeansplusplus.getClusters("euclidian", 100);
+
+        KmeansPlusPlus kmeansplusplus = new KmeansPlusPlus(noClusters,TFIDF);
+        int[] kmeansplusplusLabels = kmeansplusplus.getClusters(measure, 100);
+
+        mapping = k.centroidsLabels(original_labels);
+
         for(int i=0;i<kmeansClusters.length;i++)
-            kmeansplusplusLabels[i] = original_labels[kmeansplusplusLabels[i]];
+            kmeansplusplusLabels[i] = mapping[kmeansplusplusLabels[i]];
+
+        // Dimensionality Reduction
+        PCA pca = new PCA(TFIDF, 2);
+        double[][] reduced_matrix = pca.reduceDimensions();
+
+        // Visualization
+        pca.visualize(reduced_matrix, original_labels, noClusters, "Original_Clusters");
+        pca.visualize(reduced_matrix, kmeansClusters, noClusters, "Kmeans_Clusters");
+        pca.visualize(reduced_matrix, kmeansplusplusLabels, noClusters, "KmeansPlusPlus_Clusters");
+
+
         System.out.println("Original Labels: " + Arrays.toString(original_labels));
         System.out.println("KMeans Labels: " + Arrays.toString(kmeansClusters));
-   //     System.out.println("KMeans++ Labels: " + Arrays.toString(kmeansplusplusLabels));
+        System.out.println("KMeansPlusPlus Labels: " + Arrays.toString(kmeansplusplusLabels));
+
+        ModelPerformance performance = new ModelPerformance(original_labels,kmeansClusters,3, "kmeans");
+        performance.performance();
+
+        performance = new ModelPerformance(original_labels,kmeansplusplusLabels,3, "kmeanspluplus");
+        performance.performance();
     }
 
     private static int[] OriginalLabels(List<String> docIds, Map<Integer, Integer> documentCount) {

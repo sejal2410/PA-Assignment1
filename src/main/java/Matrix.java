@@ -68,7 +68,7 @@ public class Matrix {
             if(folderDocumentMapping.containsKey(folderName))
                 folderDocumentMapping.get(folderName).add(i);
             else{
-                System.out.println(folderName);
+               // System.out.println(folderName);
                 ArrayList<Integer> list = new ArrayList<>();
                 list.add(i);
                 folderDocumentMapping.put(folderName,list);
