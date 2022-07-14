@@ -30,7 +30,8 @@ public class Matrix {
 
         for (int i = 0; i < documents.size(); i++) {
             for (int j = 0; j < allTokenKList.size(); j++) {
-                TF[i][j] = Collections.frequency(map.get(documents.get(i)), allTokenKList.get(j)) / map.get(documents.get(i)).size();
+                double fre = Collections.frequency(map.get(documents.get(i)), allTokenKList.get(j));
+                TF[i][j] = ( fre)/ map.get(documents.get(i)).size();
             }
         }
 
@@ -57,10 +58,11 @@ public class Matrix {
         for(int i=0;i<documents.size();i++){
             String document = documents.get(i);
             int index = document.lastIndexOf('/');
-            String folderName = document.substring(index+1);
+            String folderName = document.substring(0,index+1);
             if(folderDocumentMapping.containsKey(folderName))
                 folderDocumentMapping.get(folderName).add(i);
             else{
+                System.out.println(folderName);
                 ArrayList<Integer> list = new ArrayList<>();
                 list.add(i);
                 folderDocumentMapping.put(folderName,list);
@@ -80,9 +82,14 @@ public class Matrix {
                         tokenScore.put(token, tokenScore.getOrDefault(token,0.0)+TFIDF[docIndex][i]);
                 }
             }
-            SortedSet<String> keys = new TreeSet<>((String e1, String e2) ->
-                    - (tokenScore.get(e1).compareTo(tokenScore.get(e1))));
-            keys.addAll(tokenScore.keySet());
+
+
+            Comparator<String> sortOnValue = (e1, e2) -> tokenScore.get(e1) < tokenScore.get(e2) ? -1 : tokenScore.get(e1) > tokenScore.get(e2)? 1
+                    : e1.compareTo(e2);
+            SortedSet<String> keys = new TreeSet<>(sortOnValue);
+            for(String k:tokenScore.keySet())
+                keys.add(k);
+
             keywords.put(entry.getKey(), keys);
         }
     return keywords;

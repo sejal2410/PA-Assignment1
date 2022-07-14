@@ -3,7 +3,6 @@ import java.io.*;
 
 public class TextMining {
 
-
     public static void main(String[] args) throws Exception {
         String foldersfile = "data.txt";
         String folderPath = "";
