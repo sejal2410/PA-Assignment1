@@ -24,7 +24,7 @@ public class ModelPerformance {
         int[] tp = new int[k];
         int[] fp = new int[k];
         int[] fn = new int[k];
-        int tp_total = 0, fp_total = 0, fn_total = 0;
+        int tpTotal = 0, fpTotal = 0, fnTotal = 0;
         FileWriter writer = new FileWriter(model+"_model_performance.txt");
        // writer.write("\nClass\tPrecision\tRecall\tF1-Score\n");
         for(int i=0;i<actualLabels.length;i++) {
@@ -58,16 +58,17 @@ public class ModelPerformance {
             precision[i] = ((double) tp[i])/(tp[i]+fp[i]);
             recall[i] = ((double) tp[i])/(tp[i]+fn[i]);
             f1Score[i] = (2.0 * precision[i] * recall[i]) / (precision[i] + recall[i]);
-            tp_total += tp[i];
-            fp_total += fp[i];
-            fn_total += fn[i];
+            fpTotal += fp[i];
+            fnTotal += fn[i];
+            tpTotal += tp[i];
+
 
             System.out.println(i+"\t\t"+String.format("%.2f", precision[i])+"\t\t"+String.format("%.2f", recall[i])+"\t"+String.format("%.2f", f1Score[i]));
             writer.write(i+"\t\t"+String.format("%.2f", precision[i])+"\t\t"+String.format("%.2f", recall[i])+"\t"+String.format("%.2f", f1Score[i])+"\n");
         }
 
-        double total_precision = (1.0*tp_total)/(tp_total+fp_total);
-        double total_recall = (1.0*tp_total)/(tp_total+fn_total);
+        double total_precision = (1.0*tpTotal)/(tpTotal+fpTotal);
+        double total_recall = (1.0*tpTotal)/(tpTotal+fnTotal);
         double total_f1 = (2.0 * total_precision * total_recall) / (total_precision + total_recall);
 
         System.out.println("\nTotal Precision:\t" + String.format("%.2f", total_precision));

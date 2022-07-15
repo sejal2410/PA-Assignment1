@@ -120,7 +120,6 @@ class PreProcessing{
                 ngrams.add(ngramWords);
             }
         }
-       // System.out.println(ngrams);
         return ngrams;
     }
 }

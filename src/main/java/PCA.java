@@ -44,12 +44,13 @@ public class PCA {
         return reduced;
     }
 
+
     public void visualize(double[][] reduced_matrix, int[] labels, int k, String name) throws IOException {
 
         HashMap<Integer, String> legend_map = new HashMap<>();
-        legend_map.put(0, "civil_aeronautics");
-        legend_map.put(1, "hoof_mouth_disease");
-        legend_map.put(2, "mortgage_rate");
+        legend_map.put(0, "C1");
+        legend_map.put(1, "C4");
+        legend_map.put(2, "C7");
         List<List<Double>> x_list = new ArrayList<List<Double>>();
         List<List<Double>> y_list = new ArrayList<List<Double>>();
 
@@ -67,27 +68,31 @@ public class PCA {
         plot.setSize(500, 500);
 
         for (int i = 0; i<k; i++) {
-            double[] x = new double[x_list.get(i).size()];
-            double[] y = new double[y_list.get(i).size()];
+            int g = x_list.get(i).size();
+            double[] x = new double[g];
+            g = y_list.get(i).size();
+            double[] y = new double[g];
             for (int j = 0; j<x.length; j++) {
                 x[j] = x_list.get(i).get(j);
                 y[j] = y_list.get(i).get(j);
             }
-
-            plot.addScatterPlot(legend_map.get(i), y, x);
+            if(x.length>=1 && y.length>=1)
+               plot.addScatterPlot(legend_map.get(i), y, x);
         }
 
-        plot.addLegend("NORTH");
-        BufferedImage image = new BufferedImage(plot.getWidth(), plot.getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = image.createGraphics();
-        JFrame frame = new JFrame(name);
+        plot.addLegend("SOUTH");
 
+        JFrame frame = new JFrame(name);
         frame.setSize(500,500);
         frame.setContentPane(plot);
         frame.setVisible(true);
 
-        plot.paintAll(graphics);
+        BufferedImage image = new BufferedImage(plot.getWidth(), plot.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = image.createGraphics();
+        plot.paintAll(graphics2D);
         ImageIO.write(image,"png", new File(name+".png"));
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
+
 }

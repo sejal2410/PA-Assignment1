@@ -5,16 +5,15 @@ public class TextMining {
 
     public static void main(String[] args) throws Exception {
 
-        int noClusters= Integer.parseInt(args[1]);
-        String measure= args[2];
-        String foldersfile =args[0];
+        int noClusters= 3;
+        String measure= "euclidian";
+        String foldersfile ="data.txt";
         String folderPath = "";
         File data_file = new File(foldersfile);
         BufferedReader br1 = new BufferedReader(new FileReader(data_file));
         String folderName;
         ArrayList<String> stopwords = new ArrayList();
         String stopwordsFileName = "stopwords.txt";
-        File stopwordsFile = new File(stopwordsFileName);
         BufferedReader buffer = new BufferedReader(new FileReader(stopwordsFileName));
         String word = "";
         while ((word = buffer.readLine()) != null) {
@@ -42,22 +41,22 @@ public class TextMining {
         double[][] TFIDF  = ma.constructTFIDFMatrix(documentTokens);
         List<String> docIds = ma.getDocIds();
         int[] original_labels = OriginalLabels(docIds, documentCount);
-
+        System.out.println("ori "+original_labels.length);
         HashMap<String,  SortedSet<String>> keywords = ma.generateKeywords();
         Kmeans k = new Kmeans(noClusters, TFIDF);
 
-        int[] kmeansClusters = k.getClusters(measure, 50);
+        int[] kmeansClusters =  k.getClusters(measure, 50);
         int[] mapping = k.centroidsLabels(original_labels);
 
         for(int i=0;i<kmeansClusters.length;i++)
             kmeansClusters[i] = mapping[kmeansClusters[i]];
+       // System.out.println("kmeans "+kmeansClusters.length);
 
         KmeansPlusPlus kmeansplusplus = new KmeansPlusPlus(noClusters,TFIDF);
         int[] kmeansplusplusLabels = kmeansplusplus.getClusters(measure, 100);
-
         mapping = k.centroidsLabels(original_labels);
 
-        for(int i=0;i<kmeansClusters.length;i++)
+        for(int i=0;i<kmeansplusplusLabels.length;i++)
             kmeansplusplusLabels[i] = mapping[kmeansplusplusLabels[i]];
 
         // Dimensionality Reduction
@@ -68,7 +67,6 @@ public class TextMining {
         pca.visualize(reduced_matrix, original_labels, noClusters, "Original_Clusters");
         pca.visualize(reduced_matrix, kmeansClusters, noClusters, "Kmeans_Clusters");
         pca.visualize(reduced_matrix, kmeansplusplusLabels, noClusters, "KmeansPlusPlus_Clusters");
-
 
         System.out.println("Original Labels: " + Arrays.toString(original_labels));
         System.out.println("KMeans Labels: " + Arrays.toString(kmeansClusters));

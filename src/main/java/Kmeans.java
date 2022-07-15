@@ -101,7 +101,7 @@ public class Kmeans {
     }
 
     void intializeCentroids(double[][] centres){
-        HashSet<Integer> set = new HashSet<>( Arrays.asList(1,2,3,4,7,8));
+        HashSet<Integer> set = new HashSet<>();
         int i=0;
         while(i!=k){
             int index = random.nextInt(matrix.length);
