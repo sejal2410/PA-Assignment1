@@ -42,8 +42,13 @@ On cmd:
     iii. Measure of Similarity either euclidean or cosine default is euclidian
 
 On Eclipse IDE  
-        
-        These paramters can me given as commandline arguments with the java application jar on cmd or 
+1.  Open project in the IDE as follows:
+   - Launch Eclipse IDE and select **Import** from **File** menu.
+   - In the displayed **Import** dialog, expand the **General** folder. Select **Projects from Folder or Archive** and click **Next**.
+   - Browse the directory where the project is saved and select that folder.
+   - Click **Finish**        
+
+2.To run the project these paramters nees to be given as commandline arguments with the java application jar on cmd or 
         In eclipse it can be provided as:
         - Click on Run -> Run Configurations
         - Click on Arguments tab

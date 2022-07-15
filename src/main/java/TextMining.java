@@ -24,7 +24,7 @@ public class TextMining {
         PreProcessing preProcessor = new PreProcessing(stopwords);
         HashMap<String, List<String>> documentTokens = new HashMap();
         while ((folderName = br1.readLine()) != null) {
-            File folder = new File(folderName);
+            File folder = new File("data/"+folderName);
             for (File file : folder.listFiles()) {
                 buffer = new BufferedReader(new FileReader(file));
                 List<String> tokens = preProcessor.process(buffer);
